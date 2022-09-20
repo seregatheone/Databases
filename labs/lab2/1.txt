@@ -1,0 +1,17 @@
+SELECT DISTINCT City, StateProvince
+FROM SalesLT.Address;
+
+SELECT TOP 10 Percent
+	Name, Weight
+FROM SalesLT.Product 
+ORDER BY Weight Desc;
+
+SELECT
+	Name, Weight
+FROM SalesLT.Product 
+ORDER BY Weight Desc
+OFFSET 10 ROWS
+FETCH NEXT 90 ROWS ONLY;
+
+
+
