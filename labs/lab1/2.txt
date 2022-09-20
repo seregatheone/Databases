@@ -1,0 +1,6 @@
+SELECT CAST(CustomerID AS varchar(5))+ ' : ' + CompanyName FROM SalesLT.Customer;
+
+SELECT SalesOrderNumber + '('+ CAST(RevisionNumber AS varchar(2)) +')'  AS OrderRevision ,
+CONVERT(nvarchar(30),OrderDate ,102) AS OrderDate
+FROM SalesLT.SalesOrderHeader;
+
