@@ -1,0 +1,32 @@
+SELECT Customer.CompanyName, AddressLine1, City, AddressType AS 'Billing'
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+INNER JOIN SalesLT.Address AS Addr
+ON CustomerAddress.AddressID = Addr.AddressID
+WHERE AddressType LIKE 'Main Office'
+
+SELECT CompanyName, AddressLine1, City, AddressType AS 'Shipping'
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+INNER JOIN SalesLT.Address AS Addr
+ON CustomerAddress.AddressID = Addr.AddressID
+WHERE CustomerAddress.AddressType LIKE 'Shipping'
+
+SELECT Customer.CompanyName, AddressLine1, City, AddressType AS 'Billing'
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+INNER JOIN SalesLT.Address AS Addr
+ON CustomerAddress.AddressID = Addr.AddressID
+WHERE AddressType LIKE 'Main Office'
+UNION 
+SELECT CompanyName, AddressLine1, City, AddressType AS 'Shipping'
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+INNER JOIN SalesLT.Address AS Addr
+ON CustomerAddress.AddressID = Addr.AddressID
+WHERE CustomerAddress.AddressType LIKE 'Shipping'
+ORDER BY CompanyName, CustomerAddress.AddressType

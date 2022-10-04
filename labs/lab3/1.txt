@@ -1,0 +1,14 @@
+SELECT CompanyName, SalesOrderID, TotalDue
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.SalesOrderHeader AS Sales 
+ON Customer.CustomerID = Sales.CustomerID
+
+SELECT CompanyName, SalesOrderID, TotalDue, AddressLine1, AddressLine2, City, StateProvince, PostalCode, CountryRegion
+FROM SalesLT.Customer AS Customer 
+JOIN SalesLT.SalesOrderHeader AS Sales 
+ON Customer.CustomerID = Sales.CustomerID
+JOIN SalesLT.CustomerAddress AS CusAddress 
+ON Customer.CustomerID = CusAddress.CustomerID
+JOIN SalesLT.Address AS Address
+ON Address.AddressID = CusAddress.AddressID
+WHERE CusAddress.AddressType = 'Main Office'

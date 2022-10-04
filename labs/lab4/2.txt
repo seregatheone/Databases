@@ -1,0 +1,23 @@
+SELECT Customer.CompanyName
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+WHERE CustomerAddress.AddressType LIKE 'Main Office'
+EXCEPT
+SELECT Customer.CompanyName
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+WHERE CustomerAddress.AddressType LIKE 'Shipping'
+
+SELECT Customer.CompanyName
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+WHERE CustomerAddress.AddressType LIKE 'Main Office'
+INTERSECT
+SELECT Customer.CompanyName
+FROM SalesLT.Customer AS Customer
+INNER JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+WHERE CustomerAddress.AddressType LIKE 'Shipping'

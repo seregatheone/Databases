@@ -1,0 +1,22 @@
+SELECT CompanyName, FirstName, LastName, TotalDue, SalesOrderID
+FROM SalesLT.Customer as Customer
+LEFT JOIN SalesLT.SalesOrderHeader as SalesHeader
+ON Customer.CustomerID = SalesHeader.CustomerID
+ORDER BY SalesOrderID DESC
+
+SELECT CompanyName, FirstName, LastName, Customer.CustomerID, Phone
+FROM SalesLT.Customer as Customer
+LEFT JOIN SalesLT.CustomerAddress as CustAddress
+ON Customer.CustomerID = CustAddress.AddressID
+WHERE CustAddress.AddressID IS NULL
+
+SELECT c.CustomerID, p.ProductID
+FROM SalesLT.Customer AS c
+FULL JOIN SalesLT.SalesOrderHeader AS oh
+ON c.CustomerID = oh.CustomerID
+LEFT JOIN SalesLT.SalesOrderDetail AS od
+ON oh.SalesOrderID = od.SalesOrderID
+FULL JOIN SalesLT.Product AS p
+ON od.ProductID = p.ProductID
+WHERE oh.SalesOrderID IS NULL AND od.SalesOrderID IS NULL
+ORDER BY p.ProductID, c.CustomerID
