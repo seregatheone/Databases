@@ -1,0 +1,26 @@
+1)
+SELECT Product.Name, SUM(SalesOrderDetail.LineTotal) AS TotalRevenue
+FROM SalesLT.SalesOrderDetail AS SalesOrderDetail
+JOIN SalesLT.Product AS Product
+ON SalesOrderDetail.ProductID = Product.ProductID
+GROUP BY Product.Name
+ORDER BY TotalRevenue DESC
+
+2)
+SELECT Product.Name, SUM(SalesOrderDetail.LineTotal) AS TotalRevenue
+FROM SalesLT.SalesOrderDetail AS SalesOrderDetail
+JOIN SalesLT.Product AS Product
+ON SalesOrderDetail.ProductID = Product.ProductID
+WHERE Product.ListPrice > 1000
+GROUP BY Product.Name
+ORDER BY TotalRevenue DESC
+
+3)
+SELECT Product.Name, SUM(SalesOrderDetail.LineTotal) AS TotalRevenue
+FROM SalesLT.SalesOrderDetail AS SalesOrderDetail
+JOIN SalesLT.Product AS Product
+ON SalesOrderDetail.ProductID = Product.ProductID
+WHERE Product.ListPrice > 1000
+GROUP BY Product.Name
+HAVING SUM(SalesOrderDetail.LineTotal)>20000
+ORDER BY TotalRevenue DESC

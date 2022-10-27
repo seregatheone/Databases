@@ -1,0 +1,16 @@
+1)
+SELECT ProductID, UPPER(Name) AS ProductName, ROUND(Weight,0) AS ApproxWeight
+FROM SalesLT.Product
+
+2)
+SELECT ProductID, UPPER(Name) AS ProductName, ROUND(Weight,0) AS ApproxWeight, YEAR(SellStartDate) AS SellStartYear, DATENAME(mm,SellStartDate) AS SellStartMonth
+FROM SalesLT.Product
+
+3)
+SELECT ProductID, UPPER(Name) AS ProductName, ROUND(Weight,0) AS ApproxWeight, YEAR(SellStartDate) AS SellStartYear, DATENAME(mm,SellStartDate) AS SellStartMonth, LEFT(ProductNumber, 2) AS ProductType
+FROM SalesLT.Product
+
+4)
+SELECT ProductID, UPPER(Name) AS ProductName, ROUND(Weight,0) AS ApproxWeight, YEAR(SellStartDate) AS SellStartYear, DATENAME(mm,SellStartDate) AS SellStartMonth, LEFT(ProductNumber, 2) AS ProductType
+FROM SalesLT.Product
+WHERE ISNUMERIC(Size) = 1

@@ -1,0 +1,6 @@
+1)
+SELECT Customer.CompanyName, SalesOrderHeader.TotalDue AS Revenue,
+RANK() OVER(ORDER BY TotalDue DESC) AS RankByRevenue
+FROM SalesLT.SalesOrderHeader as SalesOrderHeader
+JOIN SalesLT.Customer as Customer
+ON Customer.CustomerID = SalesOrderHeader.CustomerID

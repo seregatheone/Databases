@@ -1,0 +1,41 @@
+1)
+SELECT Product.ProductID, Product.Name, Product.ListPrice
+FROM SalesLT.Product AS Product
+WHERE ListPrice >
+(SELECT AVG(UnitPrice)
+	FROM SalesLT.SalesOrderDetail AS SalesOrderDetail
+	WHERE Product.ProductID = SalesOrderDetail.ProductID)
+ORDER BY Product.ProductID
+
+
+2) Вот тут я не нашёл как использовать встроенную функцию!!
+
+SELECT Product.ProductID, Product.Name, Product.ListPrice
+FROM SalesLT.Product AS Product
+WHERE Product.ListPrice > 100 
+INTERSECT
+SELECT Product.ProductID, Product.Name, Product.ListPrice
+FROM SalesLT.Product AS Product
+JOIN SalesLT.SalesOrderDetail AS SalesOrderDetail
+ON SalesOrderDetail.ProductID = Product.ProductID
+WHERE UnitPrice < 100
+
+3)
+SELECT Product.ProductID, Product.Name, Product.StandardCost, Product.ListPrice, 
+(SELECT AVG(UnitPrice) 
+FROM SalesLT.SalesOrderDetail AS SalesOrderDetail 
+WHERE SalesOrderDetail.ProductID = Product.ProductID) AS AvgSellingPrice
+FROM SalesLT.Product AS Product
+
+4)
+SELECT Product.ProductID, Product.Name, Product.StandardCost, Product.ListPrice, 
+
+(SELECT AVG(UnitPrice) 
+FROM SalesLT.SalesOrderDetail AS SalesOrderDetail 
+WHERE SalesOrderDetail.ProductID = Product.ProductID) AS AvgSellingPrice
+
+FROM SalesLT.Product AS Product
+
+WHERE Product.StandardCost < (SELECT AVG(UnitPrice) 
+FROM SalesLT.SalesOrderDetail AS SalesOrderDetail 
+WHERE SalesOrderDetail.ProductID = Product.ProductID)
