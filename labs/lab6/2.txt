@@ -1,0 +1,13 @@
+1)
+SELECT CustomerInformation.CustomerID, CustomerInformation.FirstName, CustomerInformation.LastName, SalesOrderHeader.TotalDue
+FROM SalesLT.SalesOrderHeader AS SalesOrderHeader
+CROSS APPLY dbo.ufnGetCustomerInformation(SalesOrderHeader.CustomerID) AS CustomerInformation
+ORDER BY SalesOrderHeader.SalesOrderID
+
+2)
+SELECT CustomerInformation.CustomerID, CustomerInformation.FirstName, CustomerInformation.LastName, Address.AddressLine1, Address.City
+FROM SalesLT.CustomerAddress AS CustomerAddress
+JOIN SalesLT.Address AS Address
+ON CustomerAddress.AddressID = Address.AddressID
+CROSS APPLY dbo.ufnGetCustomerInformation(CustomerAddress.CustomerID) AS CustomerInformation
+ORDER BY CustomerInformation.CustomerID

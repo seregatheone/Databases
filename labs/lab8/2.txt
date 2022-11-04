@@ -1,0 +1,17 @@
+SELECT * FROM
+(SELECT Customer.CompanyName, GetAllCategories.ParentProductCategoryName ParentCategory, SUM(SalesOrderDetail.LineTotal) Total
+FROM SalesLT.Customer AS Customer
+JOIN SalesLT.SalesOrderHeader AS SalesOrderHeader
+ON Customer.CustomerID = SalesOrderHeader.CustomerID
+JOIN SalesLT.SalesOrderDetail AS SalesOrderDetail
+ON SalesOrderHeader.SalesOrderID = SalesOrderDetail.SalesOrderID
+JOIN SalesLT.Product AS Product
+ON SalesOrderDetail.ProductID = Product.ProductID
+JOIN SalesLT.vGetAllCategories AS GetAllCategories
+ON Product.ProductCategoryID = GetAllCategories.ProductCategoryID
+GROUP BY Customer.CompanyName, GetAllCategories.ParentProductCategoryName
+) AS TMP
+PIVOT(
+SUM(Total) FOR ParentCategory IN (Accessories, Bikes, Clothing, Components)
+) AS Pivott
+ORDER BY CompanyName

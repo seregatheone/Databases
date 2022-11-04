@@ -1,0 +1,21 @@
+1)
+SELECT CompanyContact, SUM(TotalDue) AS Revenue
+FROM
+(SELECT CONCAT(Customer.CompanyName, ' (', Customer.FirstName, ' ', Customer.LastName, ')') AS CompanyContact, SalesOrderHeader.TotalDue
+FROM SalesLT.Customer AS Customer
+JOIN SalesLT.SalesOrderHeader AS SalesOrderHeader 
+ON Customer.CustomerID = SalesOrderHeader.CustomerID) AS ConcatedTable
+GROUP BY CompanyContact
+ORDER BY CompanyContact
+
+2)
+WITH RevenuePerCustomer AS
+(SELECT CONCAT(Customer.CompanyName, ' (', Customer.FirstName, ' ', Customer.LastName, ')') CompanyContact, SalesOrderHeader.TotalDue
+FROM SalesLT.Customer AS Customer
+JOIN SalesLT.SalesOrderHeader AS SalesOrderHeader  
+ON Customer.CustomerID = SalesOrderHeader.CustomerID
+)
+SELECT CompanyContact, SUM(TotalDue) AS Revenue
+FROM RevenuePerCustomer
+GROUP BY CompanyContact
+ORDER BY CompanyContact

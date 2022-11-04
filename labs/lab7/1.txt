@@ -1,0 +1,35 @@
+1)
+SELECT Product.ProductID, Product.Name AS ProductName, Product.ProductModelID AS ProductModel, ProductModelCatalogDescription.Summary 
+FROM SalesLT.Product as Product
+JOIN SalesLT.vProductModelCatalogDescription as ProductModelCatalogDescription
+ON Product.ProductModelID = ProductModelCatalogDescription.ProductModelID
+ORDER BY Product.ProductID
+
+2)
+DECLARE @Colors TABLE (Color nvarchar(16))
+INSERT INTO @Colors
+SELECT DISTINCT Color
+FROM SalesLT.Product
+
+SELECT ProductID, Name AS ProductName, Color
+FROM SalesLT.Product
+WHERE Color IN (SELECT * FROM @Colors)
+ORDER BY Color
+
+3)
+CREATE TABLE #Sizes (Size nvarchar(2))
+INSERT INTO #Sizes
+SELECT DISTINCT Size
+FROM SalesLT.Product
+
+SELECT ProductID, Name AS ProductName, Size
+FROM SalesLT.Product
+WHERE Size IN (SELECT * FROM #Sizes)
+ORDER BY Size DESC
+
+4)
+SELECT Product.ProductID, Product.Name AS ProductName, GetAllCategories.ParentProductCategoryName AS ParentCategory, GetAllCategories.ProductCategoryName AS Category
+FROM SalesLT.Product AS Product
+JOIN dbo.ufnGetAllCategories() AS GetAllCategories 
+ON Product.ProductCategoryID = GetAllCategories.ProductCategoryID
+ORDER BY GetAllCategories.ParentProductCategoryName, GetAllCategories.ProductCategoryName, Product.Name
