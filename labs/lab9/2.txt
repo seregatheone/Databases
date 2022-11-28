@@ -1,0 +1,9 @@
+--1
+UPDATE SalesLT.Product
+SET ListPrice = ListPrice * 1.1
+WHERE ProductCategoryID = (SELECT ProductCategoryID FROM SalesLT.ProductCategory WHERE Name LIKE 'Bells and Horns')
+
+--2
+UPDATE SalesLT.Product
+SET DiscontinuedDate = GETDATE()
+WHERE ProductCategoryID = 37 AND ProductNumber NOT LIKE 'LT-L123'

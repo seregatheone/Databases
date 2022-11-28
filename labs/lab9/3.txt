@@ -1,0 +1,2 @@
+DELETE FROM SalesLT.Product
+WHERE ProductCategoryID = (SELECT ProductCategoryID FROM SalesLT.ProductCategory WHERE Name LIKE 'Bells and Horns')

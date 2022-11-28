@@ -1,0 +1,58 @@
+DECLARE @AverageCostStart INT = (SELECT AVG(ListPrice) FROM SalesLT.Product
+	WHERE ProductCategoryID IN (SELECT ProductCategoryID 
+		FROM SalesLT.vGetAllCategories 
+		WHERE ParentProductCategoryName LIKE 'Bikes'))
+
+DECLARE @AverageCostAll INT = (SELECT AVG(ListPrice) FROM SalesLT.Product)
+
+DECLARE @MaxCostStart INT = (SELECT MAX(ListPrice ) FROM SalesLT.Product
+	WHERE ProductCategoryID IN (SELECT ProductCategoryID 
+		FROM SalesLT.vGetAllCategories 
+		WHERE ParentProductCategoryName LIKE 'Bikes'))
+
+PRINT 'COST ON START'
+				  
+PRINT @AverageCostStart
+PRINT @MaxCostStart
+--цена по рынку 737
+
+PRINT 'AVERAGE'
+PRINT @AverageCostAll
+
+
+--start
+WHILE ((SELECT AVG(ListPrice) FROM SalesLT.Product AS Product
+	WHERE Product.ProductCategoryID IN (SELECT ProductCategoryID 
+		FROM SalesLT.vGetAllCategories 
+		WHERE ParentProductCategoryName LIKE 'Bikes')) < (SELECT AVG(ListPrice) FROM SalesLT.Product))
+BEGIN
+	UPDATE SalesLT.Product
+	SET ListPrice = ListPrice * 1.1
+	WHERE ProductCategoryID IN (SELECT ProductCategoryID 
+		FROM SalesLT.vGetAllCategories 
+		WHERE ParentProductCategoryName LIKE 'Bikes')
+	IF((SELECT MAX(ListPrice) FROM SalesLT.Product
+		WHERE ProductCategoryID IN (SELECT ProductCategoryID 
+		FROM SalesLT.vGetAllCategories 
+		WHERE ParentProductCategoryName LIKE 'Bikes')) >= 5000)
+		BEGIN
+		BREAK
+		END
+END
+
+--end
+
+DECLARE @AverageCostEnd INT = (SELECT AVG(ListPrice) FROM SalesLT.Product
+	WHERE ProductCategoryID IN (SELECT ProductCategoryID 
+		FROM SalesLT.vGetAllCategories 
+		WHERE ParentProductCategoryName LIKE 'Bikes'))
+	
+DECLARE @MaxCostEnd INT = (SELECT MAX(ListPrice ) FROM SalesLT.Product
+	WHERE ProductCategoryID IN (SELECT ProductCategoryID 
+		FROM SalesLT.vGetAllCategories 
+		WHERE ParentProductCategoryName LIKE 'Bikes'))
+		
+		
+PRINT 'ON END'
+PRINT @AverageCostEnd
+PRINT @MaxCostEnd

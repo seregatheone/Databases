@@ -1,0 +1,35 @@
+-- 1
+
+CREATE PROCEDURE SalesLT.AddHeaderForSalesOrderHeader (@OrderDate DATE,@DueDate DATE,@CustomerID INT,@SalesOrderID INT)
+AS 
+BEGIN 
+INSERT INTO SalesLT.SalesOrderHeader (SalesOrderID, OrderDate, DueDate, CustomerID, ShipMethod)
+VALUES (@SalesOrderID, @OrderDate, @DueDate, @CustomerID, 'CARGO TRANSPORT 5')
+END;
+
+DECLARE @OrderDates DATE = GETDATE()
+DECLARE @DueDates DATE = DATEADD(d, 7, GETDATE())
+DECLARE @SalesOrderIDs INT= NEXT VALUE FOR SalesLT.SalesOrderNumber
+DECLARE @CustomerIDs INT = 1;
+
+EXEC SalesLT.AddHeaderForSalesOrderHeader @OrderDates, @DueDates, @CustomerIDs, @SalesOrderIDs;
+
+
+-- 2
+
+CREATE PROCEDURE SalesLT.AddProductToTheOrder (@SalesOrderID INT,@ProductId INT,@Quantity SMALLINT,@UnitPrice INT)
+AS 
+BEGIN 
+	IF EXISTS(SELECT * FROM SalesLT.SalesOrderHeader WHERE SalesOrderID = @SalesOrderID)
+	BEGIN
+		INSERT INTO SalesLT.SalesOrderDetail (SalesOrderID, ProductID, OrderQty, UnitPrice)
+		VALUES (@SalesOrderID, @ProductId, @Quantity, @UnitPrice)
+		PRINT @SalesOrderID
+	END
+	ELSE
+		PRINT '«Заказ не существует»'
+END;
+
+DECLARE @SalesOrderIDs INT= NEXT VALUE FOR SalesLT.SalesOrderNumber
+
+EXEC SalesLT.AddProductToTheOrder @SalesOrderIDs, @ProductId = 760, @Quantity = 1, @UnitPrice = 782.99;
