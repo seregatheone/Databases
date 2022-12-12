@@ -1,0 +1,35 @@
+-- 1
+DECLARE @SchemaName nvarchar(64) = 'SalesLT'
+DECLARE @TableName nvarchar(64) = 'Product'
+SELECT COLUMN_NAME AS ColumnName, DATA_TYPE AS DataType FROM INFORMATION_SCHEMA.COLUMNS 
+WHERE TABLE_SCHEMA = @SchemaName AND TABLE_NAME = @TableName AND DATA_TYPE IN ('char', 'nchar', 'varchar', 'nvarchar', 'text', 'ntext')
+
+--2
+--Name
+--ProductNumber
+--Color
+--Size
+--ThumbnailPhotoFileName
+
+DECLARE @SchemaName nvarchar(64) = 'SalesLT'
+DECLARE @TableName nvarchar(64) = 'Product'
+DECLARE @Value nvarchar(max) = 'Silver'
+DECLARE @Script nvarchar(max) = 'SELECT * FROM ' + @SchemaName + '.' + @TableName;
+DECLARE cursorF CURSOR FOR SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @SchemaName AND TABLE_NAME = @TableName AND DATA_TYPE IN ('char', 'nchar', 'varchar', 'nvarchar', 'text', 'ntext')
+
+
+OPEN myCursor
+
+DECLARE @ColumnName nvarchar(4000)
+FETCH NEXT FROM myCursor INTO @ColumnName 
+DECLARE @Where nvarchar(4000) = ' WHERE ' + @ColumnName + ' LIKE ' + @Value
+
+WHILE(@@FETCH_STATUS = 0)
+BEGIN
+	FETCH NEXT FROM myCursor INTO @ColumnName
+	SET @Where = @Where + ' OR ' + @ColumnName + ' LIKE ' + @Value + ''
+END
+CLOSE myCursor
+
+SET @Script = @Script + @Where
+PRINT @Script

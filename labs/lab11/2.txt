@@ -1,0 +1,24 @@
+-- 2.1
+BEGIN TRY
+	DECLARE @SalesOrderID int = 123123123
+	IF EXISTS(SELECT * FROM SalesLT.SalesOrderHeader WHERE SalesOrderID = 71774)
+	BEGIN
+		DECLARE @ErrorMessage0 varchar(64) = CONCAT('Заказ#', CAST(@SalesOrderID AS varchar(32)), 'не существует');
+		PRINT 'start transaction/n'
+		BEGIN TRANSACTION
+			DELETE FROM SalesLT.SalesOrderDetail WHERE SalesOrderID = @SalesOrderID;
+			THROW 50001, @ErrorMessage0, 1
+			DELETE FROM SalesLT.SalesOrderHeader WHERE SalesOrderID = @SalesOrderID;		
+			PRINT 'transaction fail'
+		ROLLBACK TRANSACTION
+	END
+	ELSE
+	BEGIN
+		DECLARE @ErrorMessage varchar(64) = CONCAT('Заказ#', CAST(@SalesOrderID AS varchar(32)), 'не существует');
+		RAISERROR(@ErrorMessage, 0, 0)
+	END
+END TRY
+BEGIN CATCH
+	DECLARE @ErrorMsg varchar(64) = ERROR_MESSAGE()
+	PRINT @ErrorMsg
+END CATCH

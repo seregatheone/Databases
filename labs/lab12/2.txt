@@ -1,0 +1,65 @@
+--1
+--DEALLOCATE MCursor
+--DROP PROCEDURE SalesLT.uspFindStringInTable;
+
+GO
+CREATE PROCEDURE SalesLT.uspFindStringInTable
+	@schema sysname,
+	@table sysname,
+	@stringToFind nvarchar(2048)
+AS
+	DECLARE @script nvarchar(max) = 'SELECT * FROM ' + @schema + '.' + @table
+	DECLARE MCursor CURSOR FOR SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = @schema AND TABLE_NAME = @table AND DATA_TYPE IN ('char', 'nchar', 'varchar', 'nvarchar', 'text', 'ntext')
+	OPEN MCursor
+	DECLARE @condition nvarchar(max) = ''
+
+	FETCH NEXT FROM MCursor INTO @condition
+	DECLARE @where nvarchar(max) = ' WHERE ' + @condition + ' LIKE ''%' + @stringToFind + '%'''
+
+	WHILE(@@FETCH_STATUS = 0)
+	BEGIN
+		FETCH NEXT FROM MCursor INTO @condition
+		SET @where = @where + ' OR ' + @condition + ' LIKE ''%' + @stringToFind + '%'''
+	END
+
+	CLOSE MCursor
+
+	SET @script = @script + @where
+	EXECUTE(@script)
+	RETURN @@ROWCOUNT
+GO
+
+DECLARE @result int 
+DEALLOCATE MCursor;
+EXECUTE @result = SalesLT.uspFindStringInTable SalesLT, Product, 'Silver'
+PRINT @result
+
+
+--2
+
+DECLARE @String nvarchar(max) = 'Bike'
+DECLARE @Schema nvarchar(64) = ''
+DECLARE @Table nvarchar(64) = ''
+DECLARE @Result int = 0
+
+DECLARE NCursor CURSOR FOR SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+OPEN NCursor
+
+FETCH NEXT FROM NCursor INTO @Schema, @Table
+
+
+WHILE(@@FETCH_STATUS = 0)
+BEGIN
+	BEGIN TRY
+		EXECUTE @Result = SalesLT.uspFindStringInTable @Schema, @Table, @String
+	END TRY
+	BEGIN CATCH		
+	END CATCH
+	IF (@Result = 0)
+		PRINT 'В таблице ' + @Schema + '.' + @Table + ' не найдено строк совпадений'
+	ELSE
+		PRINT 'В таблице ' + @Schema + '.' + @Table + ' найдено строк: ' + CAST(@result AS nvarchar(32))
+	FETCH NEXT FROM NCursor INTO @Schema, @Table
+END
+CLOSE NCursor
+DEALLOCATE NCursor
