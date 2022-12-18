@@ -1,0 +1,63 @@
+--1
+
+CREATE FUNCTION SalesLT.fn_GetOrdersTotalDueForCustomer(@CustomerID int)
+RETURNS INT
+AS
+BEGIN
+	RETURN (SELECT SUM(TotalDue) FROM SalesLT.SalesOrderHeader WHERE CustomerID = @CustomerID)
+END
+
+PRINT SalesLT.fn_GetOrdersTotalDueForCustomer(1)
+PRINT SalesLT.fn_GetOrdersTotalDueForCustomer(30113)
+
+-- 2
+
+CREATE VIEW SalesLT.vAllAddresses
+WITH SCHEMABINDING
+AS
+SELECT Customer.CustomerID, CustomerAddress.AddressType, CustomerAddress.AddressID, Address.AddressLine1, Address.AddressLine2, Address.City, Address.StateProvince, Address.CountryRegion, Address.PostalCode FROM SalesLT.Customer as Customer
+JOIN SalesLT.CustomerAddress AS CustomerAddress
+ON Customer.CustomerID = CustomerAddress.CustomerID
+JOIN SalesLT.Address as Address
+ON CustomerAddress.AddressID = Address.AddressID
+
+SELECT * FROM SalesLT.vAllAddresses
+
+--3
+
+CREATE FUNCTION SalesLT.fn_GetAddressesForCustomer(@CustomerID int)
+RETURNS TABLE
+AS
+	RETURN (SELECT * FROM SalesLT.vAllAddresses WHERE CustomerID = @CustomerID)
+
+SELECT * FROM SalesLT.fn_GetAddressesForCustomer(0)
+SELECT * FROM SalesLT.fn_GetAddressesForCustomer(29502)
+SELECT * FROM SalesLT.fn_GetAddressesForCustomer(29503)
+
+--4
+
+CREATE FUNCTION SalesLT.fn_GetMinMaxOrderPricesForProduct(@ProductID int)
+RETURNS TABLE
+AS
+	RETURN (SELECT MIN(UnitPrice) AS MinUnitPrice, MAX(UnitPrice) AS MaxUnitPrice FROM SalesLT.SalesOrderDetail WHERE ProductID = @ProductID)
+
+SELECT * FROM SalesLT.fn_GetMinMaxOrderPricesForProduct(0)
+SELECT * FROM SalesLT.fn_GetMinMaxOrderPricesForProduct(711)
+
+--5
+
+CREATE FUNCTION SalesLT.fn_GetAllDescriptionsForProduct(@ProductID int)
+RETURNS TABLE
+AS
+	RETURN 
+	(
+		SELECT ProductAndDescription.ProductID, ProductAndDescription.Name, Prices.MinUnitPrice, Prices.MaxUnitPrice, Product.ListPrice, ProductAndDescription.ProductModel, ProductAndDescription.Culture, ProductAndDescription.Description 
+		FROM SalesLT.vProductAndDescription AS ProductAndDescription
+		JOIN SalesLT.Product as Product
+		ON ProductAndDescription.ProductID = Product.ProductID
+		OUTER APPLY SalesLT.fn_GetMinMaxOrderPricesForProduct(ProductAndDescription.ProductID) AS Prices
+		WHERE ProductAndDescription.ProductID = @ProductID
+	)
+
+SELECT * FROM SalesLT.fn_GetAllDescriptionsForProduct(0)
+SELECT * FROM SalesLT.fn_GetAllDescriptionsForProduct(711)

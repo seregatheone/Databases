@@ -1,0 +1,65 @@
+--1
+--Я поменял 1 строку чтобы проверить, работает ли это правило.
+
+UPDATE SalesLT.Product 
+SET ListPrice = 750
+WHERE ProductID = 770;
+
+DECLARE myCursor CURSOR FOR SELECT MAX(ListPrice), MIN(ListPrice) FROM SalesLT.Product GROUP BY ProductCategoryID
+OPEN myCursor
+DECLARE @max int, @min int, @sum int = 0
+FETCH NEXT FROM myCursor INTO @max, @min
+WHILE(@@FETCH_STATUS = 0)
+BEGIN
+	IF(@max / @min > 20)
+	BEGIN
+		SET @sum = @sum + 1
+	END
+	FETCH NEXT FROM myCursor INTO @max, @min
+END
+CLOSE myCursor
+DEALLOCATE myCursor
+IF (@sum > 0)
+	PRINT(CONCAT('Правило 20-кратной разницы в цене нарушено у ', @sum, ' товаров'))
+ELSE
+	PRINT('Правило 20-кратной разницы в цене соблюдено');
+
+--2
+GO
+CREATE TRIGGER SalesLT.TriggerProductListPriceRules ON SalesLT.Product
+AFTER INSERT, UPDATE
+AS BEGIN
+	IF EXISTS(SELECT * FROM inserted as Ins WHERE (SELECT MAX(ListPrice) FROM SalesLT.Product as Product WHERE Product.ProductCategoryID = Ins.ProductCategoryID) / Ins.ListPrice > 20)
+	BEGIN
+		ROLLBACK;
+		THROW 50001, 'Вносимые изменения нарушают правило 20-кратной разницы в цене товаров из одной рубрики (слишком дешево)', 0
+	END
+	IF EXISTS(SELECT * FROM inserted i WHERE i.ListPrice / (SELECT MIN(ListPrice) FROM SalesLT.Product p WHERE p.ProductCategoryID = i.ProductCategoryID) > 20)
+	BEGIN
+		ROLLBACK;
+		THROW 50001, 'Вносимые изменения нарушают правило 20-кратной разницы в цене товаров из одной рубрики (слишком дорого)', 0
+	END
+END
+GO
+ALTER TABLE SalesLT.Product ENABLE TRIGGER TriggerProductListPriceRules
+
+UPDATE SalesLT.Product 
+SET ListPrice = 1
+WHERE ProductID = 770;
+--затестировано апдейтом
+
+--3 
+DECLARE @max int = (SELECT MAX(ListPrice) FROM SalesLT.Product WHERE ProductCategoryID = 5)
+DECLARE @min int = (SELECT MIN(ListPrice) FROM SalesLT.Product WHERE ProductCategoryID = 5)
+
+PRINT(CONCAT('Минимальная цена: ', @min, ', максимальная цена: ', @max))
+
+INSERT INTO SalesLT.Product (Name, ProductNumber, StandardCost, SellStartDate, ListPrice, ProductCategoryID)
+VALUES
+('Mountain Bikes', 'testBike', 1, GETDATE(), @min * 20 + 1, 5)
+
+
+
+INSERT INTO SalesLT.Product (Name, ProductNumber, StandardCost, SellStartDate, ListPrice, ProductCategoryID)
+VALUES
+('Very Cheap Product', 'generic-number-2', 1, GETDATE(), @max / 20 - 1, 5)

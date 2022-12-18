@@ -1,0 +1,21 @@
+
+SELECT * FROM SalesLT.vAllAddresses
+
+CREATE UNIQUE CLUSTERED INDEX UIX_vAllAddresses ON SalesLT.vAllAddresses
+(
+	CustomerID ASC,
+	AddressType ASC,
+	AddressID ASC, 
+	AddressLine1 ASC, 
+	AddressLine2 ASC, 
+	City ASC, 
+	StateProvince ASC, 
+	CountryRegion ASC, 
+	PostalCode ASC
+)
+
+
+
+SELECT * FROM SalesLT.vAllAddresses WITH (NOEXPAND)
+
+DROP INDEX UIX_vAllAddresses ON SalesLT.vAllAddresses
